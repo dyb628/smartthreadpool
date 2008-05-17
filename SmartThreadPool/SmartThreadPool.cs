@@ -51,7 +51,7 @@
 //		- Added exception catch in case the Performance Counters cannot 
 //		  be created.
 //
-// Next version - Changes:
+// 17 May 2008 - Changes:
 //      - Changed the dispose behavior and removed the Finalizers.
 //      - Enabled the change of the MaxThreads and MinThreads at run time.
 //      - Enabled the change of the Concurrency of a IWorkItemsGroup at run 
