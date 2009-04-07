@@ -3,23 +3,23 @@
     <ProjectType>Local</ProjectType>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{AE943A5A-7CFD-4E0D-BA51-FB763AAEA9A3}</ProjectGuid>
+    <ProjectGuid>{E8C4E483-0336-4D89-95F8-8924789ACA51}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ApplicationIcon>App.ico</ApplicationIcon>
     <AssemblyKeyContainerName>
     </AssemblyKeyContainerName>
-    <AssemblyName>STPExamples</AssemblyName>
+    <AssemblyName>TestSmartThreadPoolMono</AssemblyName>
     <AssemblyOriginatorKeyFile>
     </AssemblyOriginatorKeyFile>
     <DefaultClientScript>JScript</DefaultClientScript>
     <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
     <DefaultTargetSchema>IE50</DefaultTargetSchema>
     <DelaySign>false</DelaySign>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>STPExamples</RootNamespace>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>TestSmartThreadPool</RootNamespace>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <StartupObject>STPExamples.ParallelQuickSort</StartupObject>
+    <StartupObject>TestSmartThreadPool.Form1</StartupObject>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
@@ -33,7 +33,7 @@
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NO_WINDOWS</DefineConstants>
     <DocumentationFile>
     </DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
@@ -56,7 +56,7 @@
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;NO_WINDOWS</DefineConstants>
     <DocumentationFile>
     </DocumentationFile>
     <DebugSymbols>false</DebugSymbols>
@@ -79,16 +79,22 @@
     <Reference Include="System.Data">
       <Name>System.Data</Name>
     </Reference>
-    <Reference Include="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Program Files\Microsoft Visual Studio 8\SmartDevices\SDK\CompactFramework\2.0\v2.0\WindowsCE\System.Drawing.dll</HintPath>
+    <Reference Include="System.Drawing">
+      <Name>System.Drawing</Name>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <Name>System.Windows.Forms</Name>
     </Reference>
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
-    <ProjectReference Include="..\SmartThreadPool\SmartThreadPool.csproj">
-      <Name>SmartThreadPool</Name>
-      <Project>{8684FC56-A679-4E2E-8F96-E172FB062EB6}</Project>
+    <ProjectReference Include="..\SmartThreadPool\SmartThreadPoolMono.csproj">
+      <Project>{3462F30B-0156-409C-B256-6046D6F1764B}</Project>
+      <Name>SmartThreadPoolMono</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UsageControl\UsageControl.csproj">
+      <Name>UsageControl</Name>
+      <Project>{C11A4561-CCB5-4C96-8DF2-B804031D89D8}</Project>
       <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
     </ProjectReference>
   </ItemGroup>
@@ -97,42 +103,13 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CatchExceptionExample.cs">
-      <SubType>Code</SubType>
+    <Compile Include="Form1.cs">
+      <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CooperativeCancelExample.cs" />
-    <Compile Include="GetExceptionExample.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="OnWIGIdleEventExample.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ParallelQuickSort.cs" />
-    <Compile Include="PriorityExample.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="SimpleExample.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="SuspendedSTPStartExample.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="SuspendedWIGStartExample.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ThreadEventsExample.cs" />
-    <Compile Include="WaitForAllExample.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="WaitForAnyExample.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="WaitForIdleExample.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="WorkItemsGroupExample.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
