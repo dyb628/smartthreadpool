@@ -61,11 +61,11 @@ namespace Amib.Threading.Internal
 		/// </summary>
 		private object _state;
 
-		/// <summary>
-		/// Stores the caller's context
-		/// </summary>
-#if !(WindowsCE) && !(SILVERLIGHT)
-		private readonly CallerThreadContext _callerContext;
+#if !(_WINDOWS_CE) && !(_SILVERLIGHT)
+        /// <summary>
+        /// Stores the caller's context
+        /// </summary>
+        private readonly CallerThreadContext _callerContext;
 #endif
 		/// <summary>
 		/// Holds the result of the mehtod
@@ -136,6 +136,11 @@ namespace Amib.Threading.Internal
         /// </summary>
         private Thread _executingThread;
 
+        /// <summary>
+        /// The absulote time when the work item will be timeout
+        /// </summary>
+        private long _expirationTime;
+
 		#region Performance Counter fields
 
 		
@@ -204,7 +209,7 @@ namespace Amib.Threading.Internal
 			_workItemsGroup = workItemsGroup;
 			_workItemInfo = workItemInfo;
 
-#if !(WindowsCE) && !(SILVERLIGHT)
+#if !(_WINDOWS_CE) && !(_SILVERLIGHT)
 			if (_workItemInfo.UseCallerCallContext || _workItemInfo.UseCallerHttpContext)
 			{
 				_callerContext = CallerThreadContext.Capture(_workItemInfo.UseCallerCallContext, _workItemInfo.UseCallerHttpContext);
@@ -227,6 +232,10 @@ namespace Amib.Threading.Internal
 			_workItemCompletedRefCount = 0;
             _waitingOnQueueStopwatch = new Stopwatch();
             _processingStopwatch = new Stopwatch();
+            _expirationTime =
+                _workItemInfo.Timeout > 0 ?
+                DateTime.UtcNow.Ticks + _workItemInfo.Timeout * TimeSpan.TicksPerMillisecond :
+                long.MaxValue;
 		}
 
 		internal bool WasQueuedBy(IWorkItemsGroup workItemsGroup)
@@ -351,7 +360,7 @@ namespace Amib.Threading.Internal
         private void ExecuteWorkItem()
         {
 
-#if !(WindowsCE) && !(SILVERLIGHT)
+#if !(_WINDOWS_CE) && !(_SILVERLIGHT)
             CallerThreadContext ctc = null;
             if (null != _callerContext)
             {
@@ -396,13 +405,13 @@ namespace Amib.Threading.Internal
                 // work items was cancelled.
                 if (!SmartThreadPool.CurrentThreadEntry.AssociatedSmartThreadPool.IsShuttingdown)
                 {
-#if !(WindowsCE) && !(SILVERLIGHT)
+#if !(_WINDOWS_CE) && !(_SILVERLIGHT)
                     Thread.ResetAbort();
 #endif
                 }
             }
 
-#if !(WindowsCE) && !(SILVERLIGHT)
+#if !(_WINDOWS_CE) && !(_SILVERLIGHT)
             if (null != _callerContext)
             {
                 CallerThreadContext.Apply(ctc);
@@ -625,7 +634,19 @@ namespace Amib.Threading.Internal
 		{
             lock (this)
             {
-                if (WorkItemState.Completed == _workItemState || WorkItemState.InProgress == _workItemState)
+                if (WorkItemState.Completed == _workItemState)
+                {
+                    return _workItemState;
+                }
+
+                long nowTicks = DateTime.UtcNow.Ticks;
+
+                if (WorkItemState.Canceled != _workItemState && nowTicks > _expirationTime)
+                {
+                    _workItemState = WorkItemState.Canceled;
+                }
+
+                if (WorkItemState.InProgress == _workItemState)
                 {
                     return _workItemState;
                 }
@@ -687,7 +708,7 @@ namespace Amib.Threading.Internal
 		/// <returns>Returns true on success or false if the work item is in progress or already completed</returns>
         private bool Cancel(bool abortExecution)
 		{
-#if (WindowsCE)
+#if (_WINDOWS_CE)
             if(abortExecution)
             {
                 throw new ArgumentOutOfRangeException("abortExecution", "WindowsCE doesn't support this feature");

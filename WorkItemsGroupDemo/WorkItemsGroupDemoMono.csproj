@@ -4,11 +4,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{DC005A64-FAE9-4CFA-ADC8-F1D1FE7FE6CD}</ProjectGuid>
+    <ProjectGuid>{4B1DED71-6B32-4D9A-A811-120E5F1187D9}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WorkItemsGroupDemo</RootNamespace>
-    <AssemblyName>WorkItemsGroupDemo</AssemblyName>
+    <AssemblyName>WorkItemsGroupDemoMono</AssemblyName>
     <StartupObject>WorkItemsGroupDemo.Program</StartupObject>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -20,8 +20,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Windows\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;_WINDOWS</DefineConstants>
+    <OutputPath>bin\Mono\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;_MONO</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
@@ -29,8 +29,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Windows\Release\</OutputPath>
-    <DefineConstants>TRACE;_WINDOWS</DefineConstants>
+    <OutputPath>bin\Mono\Release\</OutputPath>
+    <DefineConstants>TRACE;_MONO</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -76,9 +76,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SmartThreadPool\SmartThreadPool.csproj">
-      <Project>{74D4C33F-7CC8-4B2A-A7DF-D8B6E63B6EBD}</Project>
-      <Name>SmartThreadPool</Name>
+    <ProjectReference Include="..\SmartThreadPool\SmartThreadPoolMono.csproj">
+      <Project>{3462F30B-0156-409C-B256-6046D6F1764B}</Project>
+      <Name>SmartThreadPoolMono</Name>
     </ProjectReference>
     <ProjectReference Include="..\UsageControl\UsageControl.csproj">
       <Project>{C11A4561-CCB5-4C96-8DF2-B804031D89D8}</Project>

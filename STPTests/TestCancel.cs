@@ -13,7 +13,7 @@ namespace SmartThreadPoolTests
 	[Category("TestCancel")]
 	public class TestCancel
 	{
-        /// <summary>
+	    /// <summary>
         /// 1. Create STP in suspended mode
         /// 2. Queue work item into the STP
         /// 3. Cancel the work item
@@ -138,9 +138,8 @@ namespace SmartThreadPoolTests
             IWorkItemResult wir = stp.QueueWorkItem(
                 state => {
                     waitToStart.Set();
-                    Thread.Sleep(100);
+                    waitToComplete.WaitOne();
                     cancelled = SmartThreadPool.IsWorkItemCanceled;
-                    waitToComplete.Set();
                     return null;
                 }
                 );
@@ -149,12 +148,94 @@ namespace SmartThreadPoolTests
 
             wir.Cancel(false);
 
-            waitToComplete.WaitOne();
+            waitToComplete.Set();
+
+            stp.WaitForIdle();
 
             Assert.IsTrue(cancelled);
 
             stp.Shutdown();
+        }      
+        
+        /// <summary>
+        /// 1. Create STP
+        /// 2. Queue work item that takes some time
+        /// 3. Wait for it to start
+        /// 4. Cancel the work item (soft)
+        /// 5. Don't call to SmartThreadPool.IsWorkItemCanceled
+        /// 6. Wait for the STP to get idle
+        /// 7. Work item's GetResult should throw WorkItemCancelException
+        /// </summary>        
+        [Test]
+        [ExpectedException(typeof(WorkItemCancelException))]
+        public void CancelInProgressWorkItemSoftWithIgnoreSample()
+        {
+            ManualResetEvent waitToStart = new ManualResetEvent(false);
+            ManualResetEvent waitToComplete = new ManualResetEvent(false);
+
+            SmartThreadPool stp = new SmartThreadPool();
+            IWorkItemResult wir = stp.QueueWorkItem(
+                state => {
+                    waitToStart.Set();
+                    Thread.Sleep(100);
+                    waitToComplete.WaitOne();
+                    return null;
+                }
+                );
+
+            waitToStart.WaitOne();
+
+            wir.Cancel(false);
+
+            waitToComplete.Set();
+
+            stp.WaitForIdle();
+
+            wir.GetResult();
+
+            stp.Shutdown();
+        }   
+        
+        /// <summary>
+        /// 1. Create STP
+        /// 2. Queue work item that takes some time
+        /// 3. Wait for it to start
+        /// 4. Cancel the work item (soft)
+        /// 5. Call to AbortOnWorkItemCancel
+        /// 5. Wait for the STP to get idle
+        /// 6. Make sure nothing ran in the work item after the AbortOnWorkItemCancel
+        /// </summary>        
+        [Test]
+        public void CancelInProgressWorkItemSoftWithAbortOnWorkItemCancel()
+        {
+            bool abortFailed = false;
+            ManualResetEvent waitToStart = new ManualResetEvent(false);
+            ManualResetEvent waitToCancel = new ManualResetEvent(false);
+
+            SmartThreadPool stp = new SmartThreadPool();
+            IWorkItemResult wir = stp.QueueWorkItem(
+                state => {
+                    waitToStart.Set();
+                    waitToCancel.WaitOne();
+                    SmartThreadPool.AbortOnWorkItemCancel();
+                    abortFailed = true;
+                    return null;
+                });
+
+            waitToStart.WaitOne();
+
+            wir.Cancel(false);
+
+            waitToCancel.Set();
+
+            stp.WaitForIdle();
+
+            Assert.IsTrue(wir.IsCanceled);
+            Assert.IsFalse(abortFailed);
+
+            stp.Shutdown();
         }
+
         /// <summary>
         /// 1. Create STP in suspended mode
         /// 2. Queue work item into the STP
@@ -173,7 +254,7 @@ namespace SmartThreadPoolTests
             stpStartInfo.StartSuspended = true;
 
             SmartThreadPool stp = new SmartThreadPool(stpStartInfo);
-            IWorkItemResult wir = stp.QueueWorkItem(state =>  { return null; });
+            IWorkItemResult wir = stp.QueueWorkItem(state => null);
 
             int counter = 0;
 
